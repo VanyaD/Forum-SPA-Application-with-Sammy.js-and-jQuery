@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Workshop: Simple Forum with Sammy.js, jQuery and Handlebars</title>
+    <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
+</head>
+<body>
+
+<div id="root">
+    <header>
+        <div class="container">
+            <h1>Simple Forum</h1>
+
+            <div id="login-controls">
+                <a href="#/login">Login or Register</a>
+            </div>
+        </div>
+    </header>
+    <div id="content">
+    </div>
+</div>
+
+
+<script src="bower_components/jquery/dist/jquery.js"></script>
+<script src="bower_components/handlebars/handlebars.js"></script>
+<script src="bower_components/sammy/lib/sammy.js"></script>
+
+<script src="js/templates.js"></script>
+<script src="js/data.js"></script>
+
+<script>
+    var sammyApp = Sammy('#content', function () {
+        var $content = $('#content');
+
+        this.get('#/', function () {
+            console.log('HOME')
+        });
+
+        this.get('#/login', function (context) {
+            templates.get('login')
+                    .then(function (template) {
+                        $content.html(template());
+                        $('#login').on('click', function () {
+                            var user = {
+                                username: $('#user').val(),
+                                passHash: $('#pass').val()
+                            };
+                            data.users.login(user)
+                                    .then(function (user) {
+                                        console.log(user);
+                                        context.redirect('#/');
+                                    });
+                        });
+
+                        $('#register').on('click', function () {
+                            var user = {
+                                username: $('#user').val(),
+                                passHash: $('#pass').val()
+                            };
+                            data.users.register(user)
+                                    .then(function (user) {
+                                        context.redirect('#/');
+                                    });
+                        });
+                    });
+        });
+    });
+
+    $(function () {
+        sammyApp.run('#/');
+    });
+</script>
+
+</body>
+</html>
